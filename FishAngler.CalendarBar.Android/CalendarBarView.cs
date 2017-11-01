@@ -342,12 +342,13 @@ namespace FishAngler.CalendarBar.Android
 
         public void OnDateSet(DatePicker view, int year, int month, int dayOfMonth)
         {
-			var selectedDateYear = _selectedDate.Year;
+			//var selectedDateYear = _selectedDate.Year;
 			_selectedDate = new DateTime(year, month + 1, dayOfMonth);
-			if (selectedDateYear != year)
-			{
-				return;
-			}
+			//if (selectedDateYear != year)
+			//{
+			//	return;
+			//}
+
 			var dayCount = (int)(_endDate - _selectedDate).TotalDays + 1;
 			if (dayCount > _maxDaysOnBar)
 			{
