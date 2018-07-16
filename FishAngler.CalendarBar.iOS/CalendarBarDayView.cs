@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Globalization;
 using CoreGraphics;
+using Foundation;
 using UIKit;
 namespace FishAngler.CalendarBar.iOS
 {
@@ -150,9 +151,9 @@ namespace FishAngler.CalendarBar.iOS
 		string GetDayText()
 		{
 			string text = "";
-			if (_date.Date == DateTime.Now.Date && !string.IsNullOrEmpty(TodayText))
+			if (_date.Date == DateTime.Today && !string.IsNullOrEmpty(TodayText))
 			{
-				text = TodayText;
+                text = TodayText;
 			}
 			else
 			{
