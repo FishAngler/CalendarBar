@@ -156,9 +156,9 @@ namespace FishAngler.CalendarBar.iOS
 			}
 			else
 			{
-				text = CultureInfo.CurrentCulture.DateTimeFormat.AbbreviatedDayNames[(int)_date.DayOfWeek];
-			}
-			return text.ToUpper();
-		}
+                text = _date.GetNarrowDay();
+            }
+            return text;
+        }
 	}
 }

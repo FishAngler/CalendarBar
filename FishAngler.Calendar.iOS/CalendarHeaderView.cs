@@ -52,15 +52,18 @@ namespace FishAngler.Calendar.iOS
             _dayLabelContainerView = new UIView();
             UILabel weekdayLabel;
 
-            for (int i = 1; i <= 7; i++)
+            var shortestDayNames = DateTimeFormatInfo.CurrentInfo.ShortestDayNames.Any(x => string.IsNullOrEmpty(x)) ? //See bug https://github.com/mono/mono/issues/9490
+                                                           new Foundation.NSDateFormatter().VeryShortStandaloneWeekdaySymbols :
+                                                           DateTimeFormatInfo.CurrentInfo.ShortestDayNames;
+            foreach (var day in shortestDayNames)
             {
-                day = CultureInfo.CurrentCulture.DateTimeFormat.DayNames[i % 7].Substring(0, 1).ToUpper();
-
-                weekdayLabel = new UILabel();
-                weekdayLabel.Font = UIFont.FromName("Helvetica-Bold", 14.0f);
-                weekdayLabel.Text = day;
-                weekdayLabel.TextColor = UIColor.Black;
-                weekdayLabel.TextAlignment = UITextAlignment.Center;
+                weekdayLabel = new UILabel
+                {
+                    Font = UIFont.FromName("Helvetica-Bold", 14.0f),
+                    Text = day,
+                    TextColor = UIColor.Black,
+                    TextAlignment = UITextAlignment.Center
+                };
 
                 _dayLabelContainerView.AddSubview(weekdayLabel);
             }

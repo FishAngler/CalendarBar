@@ -47,6 +47,7 @@
     <Compile Include="CalendarBarDayView.cs" />
     <Compile Include="CalendarBarEventArgs.cs" />
     <Compile Include="UIFontExtensions.cs" />
+    <Compile Include="DateTimeExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\Calendar-50.png" />
