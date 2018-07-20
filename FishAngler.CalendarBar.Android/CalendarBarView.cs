@@ -289,11 +289,6 @@ namespace FishAngler.CalendarBar.Android
 				_calendarDialog = new DatePickerDialog(Context, this, SelectedDate.Year, SelectedDate.Month - 1, SelectedDate.Day);
 				_calendarDialog.DatePicker.MinDate = new DateTimeOffset(_originalStartDate).ToUnixTimeMilliseconds();
                 _calendarDialog.DatePicker.MaxDate = new DateTimeOffset(_endDate).ToUnixTimeMilliseconds();
-
-				if (Build.VERSION.SdkInt >= BuildVersionCodes.Lollipop)
-				{
-				    _calendarDialog.DatePicker.FirstDayOfWeek = 2;
-				}
 			}
 		}
 

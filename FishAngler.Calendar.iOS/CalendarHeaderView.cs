@@ -50,11 +50,11 @@ namespace FishAngler.Calendar.iOS
             AddSubview(_separator);
 
             _dayLabelContainerView = new UIView();
+
             UILabel weekdayLabel;
 
-            var shortestDayNames = DateTimeFormatInfo.CurrentInfo.ShortestDayNames.Any(x => string.IsNullOrEmpty(x)) ? //See bug https://github.com/mono/mono/issues/9490
-                                                           new Foundation.NSDateFormatter().VeryShortStandaloneWeekdaySymbols :
-                                                           DateTimeFormatInfo.CurrentInfo.ShortestDayNames;
+            string[] shortestDayNames = GetNarrowDayNamesSorted();
+
             foreach (var day in shortestDayNames)
             {
                 weekdayLabel = new UILabel
@@ -69,6 +69,17 @@ namespace FishAngler.Calendar.iOS
             }
 
             AddSubview(_dayLabelContainerView);
+        }
+
+        private string[] GetNarrowDayNamesSorted()
+        {
+            var narrowStandaloneDayNames = DateTimeFormatInfo.CurrentInfo.ShortestDayNames.Any(x => string.IsNullOrEmpty(x)) ? //See bug https://github.com/mono/mono/issues/9490
+                                                             new Foundation.NSDateFormatter().VeryShortStandaloneWeekdaySymbols :
+                                                             DateTimeFormatInfo.CurrentInfo.ShortestDayNames;
+            var start = (int)DateTimeFormatInfo.CurrentInfo.FirstDayOfWeek;
+            return narrowStandaloneDayNames.Skip(start)
+                                           .Concat(narrowStandaloneDayNames.Take(start))
+                                           .ToArray();
         }
 
         public bool IsPrevHidden
