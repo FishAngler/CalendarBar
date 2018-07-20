@@ -8,7 +8,7 @@
     <OutputType>Library</OutputType>
     <RootNamespace>FishAngler.CalendarBar.Android</RootNamespace>
     <AssemblyName>FishAngler.CalendarBar.Android</AssemblyName>
-    <TargetFrameworkVersion>v7.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v8.1</TargetFrameworkVersion>
     <AndroidResgenFile>Resources\Resource.designer.cs</AndroidResgenFile>
     <AndroidResgenClass>Resource</AndroidResgenClass>
     <MonoAndroidResourcePrefix>Resources</MonoAndroidResourcePrefix>
@@ -49,6 +49,7 @@
     <Compile Include="CalendarBarDayView.cs" />
     <Compile Include="Utils.cs" />
     <Compile Include="CalendarBarEventArgs.cs" />
+    <Compile Include="DateTimeExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />

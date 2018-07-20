@@ -1,8 +1,11 @@
 ﻿using System;
-using CoreGraphics;
-using UIKit;
 using System.Diagnostics;
+using System.Linq;
+using CoreGraphics;
 using FishAngler.Calendar.iOS;
+using Foundation;
+using UIKit;
+using static System.Globalization.DateTimeFormatInfo;
 
 namespace FishAngler.CalendarBar.iOS
 {
@@ -27,7 +30,7 @@ namespace FishAngler.CalendarBar.iOS
         public CalendarBarView()
         {
             ClipsToBounds = false;
-            _calendarView = new CalendarView(); 
+            _calendarView = new CalendarView();
             _calendarView.Layer.ShadowOffset = new CGSize(2, 2);
             _calendarView.Layer.ShadowColor = UIColor.LightGray.CGColor;
             _calendarView.Layer.ShadowOpacity = 1;
@@ -39,13 +42,13 @@ namespace FishAngler.CalendarBar.iOS
         public DateTime StartDate
         {
             get { return _startDate; }
-            set 
+            set
             {
                 if (_startDate == value)
                 {
                     return;
                 }
- 
+
                 _startDate = value;
                 _originalStartDate = value;
                 MoveStartDateIfNeeded();
@@ -62,22 +65,22 @@ namespace FishAngler.CalendarBar.iOS
                 {
                     return;
                 }
-                
+
                 _endDate = value;
                 SetNeedsLayout();
             }
         }
 
         public DateTime SelectedDate
-        { 
+        {
             get { return _selectedDate; }
-            set 
+            set
             {
                 if (_selectedDate == value)
                 {
                     return;
                 }
-                    
+
                 if (value < _originalStartDate || value > _endDate)
                 {
                     return;
@@ -92,9 +95,9 @@ namespace FishAngler.CalendarBar.iOS
         public UIImage MoreDaysImage
         {
             get { return _moreDaysImage; }
-            set 
-            { 
-                _moreDaysImage = value; 
+            set
+            {
+                _moreDaysImage = value;
                 SetNeedsLayout();
             }
         }
@@ -167,8 +170,8 @@ namespace FishAngler.CalendarBar.iOS
             isCalendarEnabled = dayCountOriginal > _maxDaysOnBar;
 
             if (isCalendarEnabled)
-            { 
-                _maxDaysOnBar = (int)Math.Floor((Bounds.Width - CALENDAR_MORE_SECTION_MIN_WIDTH) / CALENDAR_DAY_WIDTH) ;
+            {
+                _maxDaysOnBar = (int)Math.Floor((Bounds.Width - CALENDAR_MORE_SECTION_MIN_WIDTH) / CALENDAR_DAY_WIDTH);
             }
 
             int daysOnBar = (int)Math.Min(_maxDaysOnBar, dayCount);
@@ -241,7 +244,7 @@ namespace FishAngler.CalendarBar.iOS
                 calendarMoreButton.SetBackgroundImage(MoreDaysImage, UIControlState.Normal);
             }
             else
-            { 
+            {
                 var assembly = this.GetType().Assembly;
                 calendarMoreButton.SetBackgroundImage(UIImage.FromResource(assembly, "FishAngler.CalendarBar.iOS.Resources.Calendar-50.png"), UIControlState.Normal);
             }
@@ -260,7 +263,7 @@ namespace FishAngler.CalendarBar.iOS
                 _calendarView.Hidden = !_calendarView.Hidden;
                 _calendarView.Reset();
                 Superview.BringSubviewToFront(_calendarView);
-            }; 
+            };
 
             Add(calendarMoreButton);
         }

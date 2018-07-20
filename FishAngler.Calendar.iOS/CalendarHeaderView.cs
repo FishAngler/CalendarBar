@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Globalization;
+using System.Linq;
 using CoreGraphics;
 using UIKit;
+
 namespace FishAngler.Calendar.iOS
 {
     public class CalendarHeaderView : UIView
@@ -18,47 +20,50 @@ namespace FishAngler.Calendar.iOS
             _prev = new UIButton() { Font = UIFont.BoldSystemFontOfSize(20) };
             _prev.SetTitle("<", UIControlState.Normal);
             _prev.SetTitleColor(UIColor.Gray, UIControlState.Normal);
-            _prev.TouchUpInside += (sender, e) => 
+            _prev.TouchUpInside += (sender, e) =>
             {
                 PrevClicked?.Invoke();
             };
             AddSubview(_prev);
 
-			var headerTouchGestureRecognizer = new UITapGestureRecognizer(OnHeaderClick);
+            var headerTouchGestureRecognizer = new UITapGestureRecognizer(OnHeaderClick);
 
-			_monthLabel = new UILabel();
-			_monthLabel.AddGestureRecognizer(headerTouchGestureRecognizer);
+            _monthLabel = new UILabel();
+            _monthLabel.AddGestureRecognizer(headerTouchGestureRecognizer);
             _monthLabel.UserInteractionEnabled = true;
-			_monthLabel.TextAlignment = UITextAlignment.Center;
+            _monthLabel.TextAlignment = UITextAlignment.Center;
             _monthLabel.Font = UIFont.FromName("Helvetica", 17.0f);
             _monthLabel.TextColor = UIColor.Gray;
             AddSubview(_monthLabel);
 
-			_next = new UIButton() { Font = UIFont.BoldSystemFontOfSize(20) };
-			_next.SetTitle(">", UIControlState.Normal);
+            _next = new UIButton() { Font = UIFont.BoldSystemFontOfSize(20) };
+            _next.SetTitle(">", UIControlState.Normal);
             _next.SetTitleColor(UIColor.Gray, UIControlState.Normal);
-			_next.TouchUpInside += (sender, e) =>
-			{
-				NextClicked?.Invoke();
-			};
-			AddSubview(_next);
+            _next.TouchUpInside += (sender, e) =>
+            {
+                NextClicked?.Invoke();
+            };
+            AddSubview(_next);
 
-			_separator = new UIView();
+            _separator = new UIView();
             _separator.BackgroundColor = UIColor.LightGray;
             AddSubview(_separator);
 
             _dayLabelContainerView = new UIView();
-            string day = "";
             UILabel weekdayLabel;
-            for (int i = 1; i <= 7; i++)
-            {
-                day = CultureInfo.CurrentCulture.DateTimeFormat.DayNames[i % 7].Substring(0, 1).ToUpper();
 
-                weekdayLabel = new UILabel();
-                weekdayLabel.Font = UIFont.FromName("Helvetica-Bold", 14.0f);
-                weekdayLabel.Text = day;
-                weekdayLabel.TextColor = UIColor.Black;
-                weekdayLabel.TextAlignment = UITextAlignment.Center;
+            var shortestDayNames = DateTimeFormatInfo.CurrentInfo.ShortestDayNames.Any(x => string.IsNullOrEmpty(x)) ? //See bug https://github.com/mono/mono/issues/9490
+                                                           new Foundation.NSDateFormatter().VeryShortStandaloneWeekdaySymbols :
+                                                           DateTimeFormatInfo.CurrentInfo.ShortestDayNames;
+            foreach (var day in shortestDayNames)
+            {
+                weekdayLabel = new UILabel
+                {
+                    Font = UIFont.FromName("Helvetica-Bold", 14.0f),
+                    Text = day,
+                    TextColor = UIColor.Black,
+                    TextAlignment = UITextAlignment.Center
+                };
 
                 _dayLabelContainerView.AddSubview(weekdayLabel);
             }
@@ -69,24 +74,24 @@ namespace FishAngler.Calendar.iOS
         public bool IsPrevHidden
         {
             get { return _prev.Hidden; }
-            set 
-            { 
-                _prev.Hidden = value; 
+            set
+            {
+                _prev.Hidden = value;
                 SetNeedsLayout();
             }
         }
 
-		public bool IsNextHidden
-		{
+        public bool IsNextHidden
+        {
             get { return _next.Hidden; }
-			set
-			{
-				_next.Hidden = value;
-				SetNeedsLayout();
-			}
-		}
+            set
+            {
+                _next.Hidden = value;
+                SetNeedsLayout();
+            }
+        }
 
-		public int HorizontalPadding { get; set; }
+        public int HorizontalPadding { get; set; }
 
         public event Action PrevClicked;
         public event Action NextClicked;
@@ -115,8 +120,8 @@ namespace FishAngler.Calendar.iOS
 
             _monthLabel.Frame = new CGRect(_prev.Frame.Right, 2, Frame.Width - 80, 40);
 
-			_next.Frame = new CGRect(_monthLabel.Frame.Right, 0, 40, 40);
-            			
+            _next.Frame = new CGRect(_monthLabel.Frame.Right, 0, 40, 40);
+
             _monthLabel.Text = _text;
 
             _separator.Frame = new CGRect(0, _monthLabel.Bounds.Bottom + 1, Frame.Width, 1);
