@@ -55,6 +55,7 @@
     <Compile Include="CalendarHeaderView.cs" />
     <Compile Include="CalendarView.cs" />
     <Compile Include="CalendarYearList.cs" />
+    <Compile Include="DateTimeExtensions.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
 </Project>

@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using Foundation;
-using UIKit;
-using Intents;
-using CoreGraphics;
 using System.Globalization;
 using System.Linq;
-using GameKit;
+using CoreGraphics;
+using Foundation;
+using UIKit;
+using static System.Globalization.DateTimeFormatInfo;
 
 namespace FishAngler.Calendar.iOS
 {
@@ -36,8 +35,8 @@ namespace FishAngler.Calendar.iOS
 
         DateTime _startDate = new DateTime();
         DateTime _startDateCache = new DateTime();
-        DateTime _endDate = DateTime.Now.AddMonths(3);
-        DateTime _endDateCache = DateTime.Now.AddMonths(3);
+        DateTime _endDate = DateTime.Today.AddMonthsSafe(3);
+        DateTime _endDateCache = DateTime.Today.AddMonthsSafe(3);
         DateTime _startOfMonthCache = new DateTime();
         DateTime? _displayDate;
         DateTime? _dateBeingSelectedByUser;
@@ -82,8 +81,8 @@ namespace FishAngler.Calendar.iOS
 
             BackgroundColor = UIColor.White;
 
-            StartDate = DateTime.Now;
-            EndDate = DateTime.Now.AddMonths(3);
+            StartDate = DateTime.Today;
+            EndDate = DateTime.Today.AddMonthsSafe(3);
         }
 
         public ICalendarViewDelegate Delegate { get; set; }
@@ -94,7 +93,7 @@ namespace FishAngler.Calendar.iOS
             {
                 _startDate = value;
                 _startDateCache = value;
-                _startOfMonthCache = new DateTime(value.Year, value.Month, 1);
+                _startOfMonthCache = DateTimeExtensions.CreateValidDate(value.Year, value.Month, 1);
                 _yearList.StartDate = value;
             }
         }
@@ -120,38 +119,38 @@ namespace FishAngler.Calendar.iOS
 
         void OnPrevClicked()
         {
-            var newDisplayDate = _displayDate.Value.AddMonths(-1) > _startDateCache ? _displayDate.Value.AddMonths(-1) : _startDateCache;
+            var newDisplayDate = _displayDate.Value.AddMonthsSafe(-1) > _startDateCache ? _displayDate.Value.AddMonthsSafe(-1) : _startDateCache;
             SetDisplayDate(newDisplayDate, true);
             _displayDate = newDisplayDate;
         }
 
-		void OnNextClicked()
-		{
-            var newDisplayDate = _displayDate.Value.AddMonths(1) < _endDateCache ? _displayDate.Value.AddMonths(1) : _endDateCache;
-			SetDisplayDate(newDisplayDate, true);
-			_displayDate = newDisplayDate;
-		}
-
-		void OnYearSelected(int year)
+        void OnNextClicked()
         {
-            var displayDate = new DateTime(year, _displayDate?.Month ?? 1, _displayDate?.Day ?? 1);
-			var newDisplayDate = displayDate;
-			if (newDisplayDate < _startDateCache)
-			{
-				newDisplayDate = _startDateCache;
-			}
-			else if (newDisplayDate > _endDateCache)
-			{
-				newDisplayDate = _endDateCache;
-			}
+            var newDisplayDate = _displayDate.Value.AddMonthsSafe(1) < _endDateCache ? _displayDate.Value.AddMonthsSafe(1) : _endDateCache;
+            SetDisplayDate(newDisplayDate, true);
+            _displayDate = newDisplayDate;
+        }
 
-			SetDisplayDate(newDisplayDate, false);
-			_displayDate = newDisplayDate;
-			Animate(1,
+        void OnYearSelected(int year)
+        {
+            var displayDate = DateTimeExtensions.CreateValidDate(year, _displayDate?.Month ?? 1, _displayDate?.Day ?? 1);
+            var newDisplayDate = displayDate;
+            if (newDisplayDate < _startDateCache)
+            {
+                newDisplayDate = _startDateCache;
+            }
+            else if (newDisplayDate > _endDateCache)
+            {
+                newDisplayDate = _endDateCache;
+            }
+
+            SetDisplayDate(newDisplayDate, false);
+            _displayDate = newDisplayDate;
+            Animate(1,
                     () => _yearList.Alpha = 0,
                     () =>
                     {
-                        _yearList.Hidden = true;                        
+                        _yearList.Hidden = true;
                     });
             SetNeedsLayout();
         }
@@ -166,7 +165,7 @@ namespace FishAngler.Calendar.iOS
             _yearList.Alpha = 0;
             _yearList.Hidden = false;
             _yearList.SelectedYear = _displayDate.Value.Year;
-            Animate(1,() => _yearList.Alpha = 1, null);
+            Animate(1, () => _yearList.Alpha = 1, null);
         }
 
         public UICollectionViewCell GetCell(UICollectionView collectionView, NSIndexPath indexPath)
@@ -204,11 +203,11 @@ namespace FishAngler.Calendar.iOS
 
             var month = indexPath.Section;
             var day = indexPath.Item - currentMonthInfo.Item1;
-            var date = _startOfMonthCache.AddMonths(month).AddDays(day);
+            var date = _startOfMonthCache.AddMonthsSafe(month).AddDaysSafe((int)day);
 
             dayCell.IsActive = date >= _startDateCache && date <= _endDateCache;
 
-            Console.WriteLine($"Created cell for date {date}");
+            System.Diagnostics.Debug.WriteLine($"Created cell for date {date}");
 
             return dayCell;
         }
@@ -221,7 +220,7 @@ namespace FishAngler.Calendar.iOS
             {
                 Delegate.CalendarDidScrollToMonth(this, yearDate);
             }
-		}
+        }
 
         [Export("scrollViewDidEndScrollingAnimation:")]
         public void ScrollAnimationEnded(UIScrollView scrollView)
@@ -231,7 +230,7 @@ namespace FishAngler.Calendar.iOS
             {
                 Delegate.CalendarDidScrollToMonth(this, yearDate);
             }
-		}
+        }
 
         public void Reset()
         {
@@ -252,24 +251,22 @@ namespace FishAngler.Calendar.iOS
                 page = (int)(Math.Floor(_calendarView.ContentOffset.Y / cvbounds.Size.Height));
             }
 
-            var yearDate = _startOfMonthCache.AddMonths(page);
-            var month = yearDate.Month;
-            var monthName = yearDate.ToString("MMMM", CultureInfo.CurrentCulture);
-            var year = yearDate.Year;
-
-            _headerView.Text = monthName + " " + year.ToString();
+            var yearDate = _startOfMonthCache.AddMonthsSafe(page);
+            _headerView.Text = yearDate.ToString(CurrentInfo.YearMonthPattern);
 
             _displayDate = yearDate;
 
             SetNexPrevVisibility(yearDate);
 
-			return yearDate;
+            return yearDate;
         }
 
         public nint GetItemsCount(UICollectionView collectionView, nint section)
         {
-            var currentItemFirstDayDate = StartDate.AddMonths((int)section);
-            currentItemFirstDayDate = new DateTime(currentItemFirstDayDate.Year, currentItemFirstDayDate.Month, 1);
+            var currentItemFirstDayDate = StartDate.AddMonthsSafe((int)section);
+            currentItemFirstDayDate = DateTimeExtensions.CreateValidDate(currentItemFirstDayDate.Year, 
+                                                                         currentItemFirstDayDate.Month, 
+                                                                         1);
             var day = (int)currentItemFirstDayDate.DayOfWeek % 7 - 1;
             if (day == -1)
             {
@@ -289,7 +286,7 @@ namespace FishAngler.Calendar.iOS
                 return 0;
             }
 
-            var today = DateTime.Now;
+            var today = DateTime.Today;
 
             if (_startOfMonthCache < today && _endDateCache > today)
             {
@@ -378,7 +375,7 @@ namespace FishAngler.Calendar.iOS
             var firstDayInMonth = currentMonthInfo.Item1;
             var month = indexPath.Section;
             var day = indexPath.Item - firstDayInMonth;
-            _dateBeingSelectedByUser = _startOfMonthCache.AddMonths(month).AddDays(day);
+            _dateBeingSelectedByUser = _startOfMonthCache.AddMonthsSafe(month).AddDaysSafe((int)day);
 
             if (Delegate != null)
             {
@@ -467,14 +464,17 @@ namespace FishAngler.Calendar.iOS
             SetNexPrevVisibility(date);
 
             _displayDate = date;
-		}
+        }
 
         void SetNexPrevVisibility(DateTime date)
         {
-			_headerView.IsPrevHidden = date.AddMonths(-1) < new DateTime(_startDate.Year, _startDate.Month, 1);
-			_headerView.IsNextHidden = date.AddMonths(1) > new DateTime(_endDate.Year, _endDate.Month, DateTime.DaysInMonth(_endDate.Year, _endDate.Month)); ;
-
-		}
+            _headerView.IsPrevHidden = date.AddMonthsSafe(-1) < DateTimeExtensions.CreateValidDate(_startDate.Year, 
+                                                                                                   _startDate.Month,
+                                                                                                   1);
+            _headerView.IsNextHidden = date.AddMonthsSafe(1) > DateTimeExtensions.CreateValidDate(_endDate.Year, 
+                                                                                                  _endDate.Month, 
+                                                                                                  DateTime.DaysInMonth(_endDate.Year, _endDate.Month));
+        }
 
         public override void LayoutSubviews()
         {

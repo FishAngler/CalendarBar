@@ -3,360 +3,360 @@ using Android.App;
 using Android.Content;
 using Android.Content.Res;
 using Android.Graphics;
-using Android.OS;
 using Android.Runtime;
 using Android.Util;
 using Android.Views;
 using Android.Widget;
+using static System.Globalization.DateTimeFormatInfo;
 
 namespace FishAngler.CalendarBar.Android
 {
-	public class CalendarBarView : LinearLayout, DatePickerDialog.IOnDateSetListener
-	{
-		DateTime _startDate = DateTime.Now.Date;
-		DateTime _originalStartDate;
-		DateTime _endDate = DateTime.Now.Date.AddMonths(3);
-		DateTime _selectedDate = DateTime.Now.Date;
-		CalendarBarDayView _selectedCalendarBarDay;
-		Color _textColor = Color.Black;
-		Color _selectedTextColor = Color.Black;
-		Color _selectedIndicatorColor = Color.Black;
-		string _todayText;
-		int _moreDaysImage;
-		DatePickerDialog _calendarDialog;
-		int _maxDaysOnBar;
-		float _textSize = 12;
+    public class CalendarBarView : LinearLayout, DatePickerDialog.IOnDateSetListener
+    {
+        DateTime _startDate = DateTime.Now.Date;
+        DateTime _originalStartDate;
+        DateTime _endDate = DateTime.Now.Date.AddMonthsSafe(3);
+        DateTime _selectedDate = DateTime.Now.Date;
+        CalendarBarDayView _selectedCalendarBarDay;
+        Color _textColor = Color.Black;
+        Color _selectedTextColor = Color.Black;
+        Color _selectedIndicatorColor = Color.Black;
+        string _todayText;
+        int _moreDaysImage;
+        DatePickerDialog _calendarDialog;
+        int _maxDaysOnBar;
+        float _textSize = 12;
 
-		readonly int CALENDAR_MORE_SECTION_MIN_WIDTH = 40;
-		readonly int CALENDAR_MORE_BUTTON_WIDTH = 35;
+        readonly int CALENDAR_MORE_SECTION_MIN_WIDTH = 40;
+        readonly int CALENDAR_MORE_BUTTON_WIDTH = 35;
 
-		public CalendarBarView(Context ctx) : base(ctx)
-		{
-			Initialize();
-		}
+        public CalendarBarView(Context ctx) : base(ctx)
+        {
+            Initialize();
+        }
 
-		public CalendarBarView(IntPtr javaReference, JniHandleOwnership transfer)
-			: base(javaReference, transfer)
-		{
-			Initialize();
-		}
+        public CalendarBarView(IntPtr javaReference, JniHandleOwnership transfer)
+            : base(javaReference, transfer)
+        {
+            Initialize();
+        }
 
-		public CalendarBarView(Context context, IAttributeSet attrs)
-			: base(context, attrs)
-		{
-			Initialize();
-		}
+        public CalendarBarView(Context context, IAttributeSet attrs)
+            : base(context, attrs)
+        {
+            Initialize();
+        }
 
-		public CalendarBarView(Context context, IAttributeSet attrs, int defStyle)
-			: base(context, attrs, defStyle)
-		{
-			Initialize();
-		}
+        public CalendarBarView(Context context, IAttributeSet attrs, int defStyle)
+            : base(context, attrs, defStyle)
+        {
+            Initialize();
+        }
 
-		public DateTime StartDate
-		{
-			get { return _startDate; }
-			set
-			{
-				if (_startDate == value)
-				{
-					return;
-				}
+        public DateTime StartDate
+        {
+            get { return _startDate; }
+            set
+            {
+                if (_startDate == value || value < CurrentInfo.Calendar.MinSupportedDateTime)
+                {
+                    return;
+                }
 
-				_startDate = value;
-				_originalStartDate = value;
-				MoveStartDateIfNeeded();
-				RequestLayout();
-			}
-		}
+                _startDate = value;
+                _originalStartDate = value;
+                MoveStartDateIfNeeded();
+                RequestLayout();
+            }
+        }
 
-		public DateTime EndDate
-		{
-			get { return _endDate; }
-			set
-			{
-				if (_endDate == value)
-				{
-					return;
-				}
+        public DateTime EndDate
+        {
+            get { return _endDate; }
+            set
+            {
+                if (_endDate == value || value > CurrentInfo.Calendar.MaxSupportedDateTime)
+                {
+                    return;
+                }
 
-				_endDate = value;
-				RequestLayout();
-			}
-		}
+                _endDate = value;
+                RequestLayout();
+            }
+        }
 
-		public DateTime SelectedDate
-		{
-			get { return _selectedDate; }
-			set
-			{
-				if (_selectedDate == value)
-				{
-					return;
-				}
+        public DateTime SelectedDate
+        {
+            get { return _selectedDate; }
+            set
+            {
+                if (_selectedDate == value)
+                {
+                    return;
+                }
 
-				if (value < _originalStartDate || value > _endDate)
-				{
-					return;
-				}
+                if (value < _originalStartDate || value > _endDate)
+                {
+                    return;
+                }
 
-				_selectedDate = value;
-				MoveStartDateIfNeeded();
-				RequestLayout();
-			}
-		}
+                _selectedDate = value;
+                MoveStartDateIfNeeded();
+                RequestLayout();
+            }
+        }
 
-		public int MoreDaysImage
-		{
-			get { return _moreDaysImage; }
-			set
-			{
-				_moreDaysImage = value;
-				RequestLayout();
-			}
-		}
+        public int MoreDaysImage
+        {
+            get { return _moreDaysImage; }
+            set
+            {
+                _moreDaysImage = value;
+                RequestLayout();
+            }
+        }
 
-		public Color TextColor
-		{
-			get { return _textColor; }
-			set
-			{
-				_textColor = value;
-				RequestLayout();
-			}
-		}
+        public Color TextColor
+        {
+            get { return _textColor; }
+            set
+            {
+                _textColor = value;
+                RequestLayout();
+            }
+        }
 
-		public float TextSize
-		{
-			get { return _textSize; }
-			set
-			{
-				_textSize = value;
-				RequestLayout();
-			}
-		}
+        public float TextSize
+        {
+            get { return _textSize; }
+            set
+            {
+                _textSize = value;
+                RequestLayout();
+            }
+        }
 
-		public Color SelectedTextColor
-		{
-			get { return _selectedTextColor; }
-			set
-			{
-				_selectedTextColor = value;
-				RequestLayout();
-			}
-		}
+        public Color SelectedTextColor
+        {
+            get { return _selectedTextColor; }
+            set
+            {
+                _selectedTextColor = value;
+                RequestLayout();
+            }
+        }
 
-		public string TodayText
-		{
-			get { return _todayText; }
-			set
-			{
-				_todayText = value;
-				RequestLayout();
-			}
-		}
+        public string TodayText
+        {
+            get { return _todayText; }
+            set
+            {
+                _todayText = value;
+                RequestLayout();
+            }
+        }
 
-		public Color SelectedIndicatorColor
-		{
-			get { return _selectedIndicatorColor; }
-			set
-			{
-				_selectedIndicatorColor = value;
-				RequestLayout();
-			}
-		}
+        public Color SelectedIndicatorColor
+        {
+            get { return _selectedIndicatorColor; }
+            set
+            {
+                _selectedIndicatorColor = value;
+                RequestLayout();
+            }
+        }
 
-		public event EventHandler<CalendarBarEventArgs> DayChanged;
+        public event EventHandler<CalendarBarEventArgs> DayChanged;
 
-		void MoveStartDateIfNeeded()
-		{
-			if (_selectedDate > _startDate.AddDays(_maxDaysOnBar - 1) || (_selectedDate < _startDate && _selectedDate >= _originalStartDate))
-			{
-				_startDate = _selectedDate;
-			}
-		}
+        void MoveStartDateIfNeeded()
+        {
+            if (_selectedDate > _startDate.AddDaysSafe(_maxDaysOnBar - 1) || (_selectedDate < _startDate && _selectedDate >= _originalStartDate))
+            {
+                _startDate = _selectedDate;
+            }
+        }
 
-		void Initialize()
-		{
-			LayoutParameters = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.WrapContent);
-			_originalStartDate = _startDate;
-		}
+        void Initialize()
+        {
+            LayoutParameters = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.WrapContent);
+            _originalStartDate = _startDate;
+        }
 
-		void CreateChildControls()
-		{
-			if (MeasuredWidth == 0)
-			{
-				return;
-			}
+        void CreateChildControls()
+        {
+            if (MeasuredWidth == 0)
+            {
+                return;
+            }
 
-			var metrics = Resources.System.DisplayMetrics;
+            var metrics = Resources.System.DisplayMetrics;
 
-			var dayCount = 999;
-			var originalDayCount = 999;
+            var dayCount = 999;
+            var originalDayCount = 999;
 
-			RemoveAllViews();
+            RemoveAllViews();
 
-			bool isCalendarEnabled = true;
-			_maxDaysOnBar = (int)Math.Floor(
-				(double)Utils.ConvertPixelsToDp(MeasuredWidth, Context) / CalendarBarDayView.CALENDAR_DAY_WIDTH
-			);
+            bool isCalendarEnabled = true;
+            _maxDaysOnBar = (int)Math.Floor(
+                (double)Utils.ConvertPixelsToDp(MeasuredWidth, Context) / CalendarBarDayView.CALENDAR_DAY_WIDTH
+            );
 
-			originalDayCount = (int)(_endDate - _originalStartDate).TotalDays + 1;
-			dayCount = (int)(_endDate - _startDate).TotalDays + 1;
-			isCalendarEnabled = originalDayCount > _maxDaysOnBar;
+            originalDayCount = (int)(_endDate - _originalStartDate).TotalDays + 1;
+            dayCount = (int)(_endDate - _startDate).TotalDays + 1;
+            isCalendarEnabled = originalDayCount > _maxDaysOnBar;
 
-			if (isCalendarEnabled)
-			{
-				_maxDaysOnBar = (int)Math.Floor(
-					(double)(Utils.ConvertPixelsToDp(MeasuredWidth, Context) - CALENDAR_MORE_SECTION_MIN_WIDTH) / CalendarBarDayView.CALENDAR_DAY_WIDTH
-				);
-			}
+            if (isCalendarEnabled)
+            {
+                _maxDaysOnBar = (int)Math.Floor(
+                    (double)(Utils.ConvertPixelsToDp(MeasuredWidth, Context) - CALENDAR_MORE_SECTION_MIN_WIDTH) / CalendarBarDayView.CALENDAR_DAY_WIDTH
+                );
+            }
 
-			int daysOnBar = (int)Math.Min(_maxDaysOnBar, dayCount);
+            int daysOnBar = (int)Math.Min(_maxDaysOnBar, dayCount);
 
-			CalendarBarDayView calendarBarDay;
-			DateTime currentDate;
-			for (int i = 0; i < daysOnBar; i++)
-			{
-				currentDate = _startDate.AddDays(i).Date;
-				calendarBarDay = AddDay(currentDate);
+            CalendarBarDayView calendarBarDay;
+            DateTime currentDate;
+            for (int i = 0; i < daysOnBar; i++)
+            {
+                currentDate = _startDate.AddDaysSafe(i).Date;
+                calendarBarDay = AddDay(currentDate);
 
-				if (calendarBarDay.IsSelected)
-				{
-					_selectedCalendarBarDay = calendarBarDay;
-				}
-			}
+                if (calendarBarDay.IsSelected)
+                {
+                    _selectedCalendarBarDay = calendarBarDay;
+                }
+            }
 
-			if (isCalendarEnabled)
-			{
-				AddMoreDaysSection();
-			}
-		}
+            if (isCalendarEnabled)
+            {
+                AddMoreDaysSection();
+            }
+        }
 
-		CalendarBarDayView AddDay(DateTime currentDate)
-		{
-			var calendarBarDay = new CalendarBarDayView(Context)
-			{
-				Date = currentDate,
-				TextColor = TextColor,
-				SelectedTextColor = SelectedTextColor,
-				IsSelected = IsSelected(currentDate),
-				TodayText = TodayText,
-				SelectedIndicatorColor = SelectedIndicatorColor,
-				TextSize = _textSize
-			};
+        CalendarBarDayView AddDay(DateTime currentDate)
+        {
+            var calendarBarDay = new CalendarBarDayView(Context)
+            {
+                Date = currentDate,
+                TextColor = TextColor,
+                SelectedTextColor = SelectedTextColor,
+                IsSelected = IsSelected(currentDate),
+                TodayText = TodayText,
+                SelectedIndicatorColor = SelectedIndicatorColor,
+                TextSize = _textSize
+            };
 
-			calendarBarDay.Click += DaySelected;
+            calendarBarDay.Click += DaySelected;
 
-			AddView(calendarBarDay);
+            AddView(calendarBarDay);
 
-			return calendarBarDay;
-		}
+            return calendarBarDay;
+        }
 
-		void AddMoreDaysSection()
-		{
-			var calendarMoreSeparator = new View(Context)
-			{
-				LayoutParameters = new LinearLayout.LayoutParams(Utils.ConvertDpToPixel(2, Context), ViewGroup.LayoutParams.MatchParent),
-			};
-			calendarMoreSeparator.SetBackgroundColor(TextColor);
-			(calendarMoreSeparator.LayoutParameters as LinearLayout.LayoutParams)
-				.SetMargins(Utils.ConvertDpToPixel(0, Context), Utils.ConvertDpToPixel(7, Context), Utils.ConvertDpToPixel(0, Context), Utils.ConvertDpToPixel(7, Context));
+        void AddMoreDaysSection()
+        {
+            var calendarMoreSeparator = new View(Context)
+            {
+                LayoutParameters = new LinearLayout.LayoutParams(Utils.ConvertDpToPixel(2, Context), ViewGroup.LayoutParams.MatchParent),
+            };
+            calendarMoreSeparator.SetBackgroundColor(TextColor);
+            (calendarMoreSeparator.LayoutParameters as LinearLayout.LayoutParams)
+                .SetMargins(Utils.ConvertDpToPixel(0, Context), Utils.ConvertDpToPixel(7, Context), Utils.ConvertDpToPixel(0, Context), Utils.ConvertDpToPixel(7, Context));
 
-			AddView(calendarMoreSeparator);
+            AddView(calendarMoreSeparator);
 
-			var calendarMoreButton = new ImageView(Context)
-			{
-				LayoutParameters = new LinearLayout.LayoutParams(Utils.ConvertDpToPixel(CALENDAR_MORE_BUTTON_WIDTH, Context), ViewGroup.LayoutParams.MatchParent),
-			};
-			(calendarMoreButton.LayoutParameters as LinearLayout.LayoutParams)
-				.SetMargins(Utils.ConvertDpToPixel(5, Context), Utils.ConvertDpToPixel(7, Context), Utils.ConvertDpToPixel(5, Context), Utils.ConvertDpToPixel(7, Context));
+            var calendarMoreButton = new ImageView(Context)
+            {
+                LayoutParameters = new LinearLayout.LayoutParams(Utils.ConvertDpToPixel(CALENDAR_MORE_BUTTON_WIDTH, Context), ViewGroup.LayoutParams.MatchParent),
+            };
+            (calendarMoreButton.LayoutParameters as LinearLayout.LayoutParams)
+                .SetMargins(Utils.ConvertDpToPixel(5, Context), Utils.ConvertDpToPixel(7, Context), Utils.ConvertDpToPixel(5, Context), Utils.ConvertDpToPixel(7, Context));
 
-			calendarMoreButton.Click += (sender, e) =>
-			{
-				_calendarDialog.Show();
-			};
+            calendarMoreButton.Click += (sender, e) =>
+            {
+                _calendarDialog.Show();
+            };
 
-			if (MoreDaysImage > 0)
-			{
-				calendarMoreButton.SetImageResource(MoreDaysImage);
-			}
+            if (MoreDaysImage > 0)
+            {
+                calendarMoreButton.SetImageResource(MoreDaysImage);
+            }
 
-			AddView(calendarMoreButton);
+            AddView(calendarMoreButton);
 
-			if (_calendarDialog == null)
-			{
-				_calendarDialog = new DatePickerDialog(Context, this, SelectedDate.Year, SelectedDate.Month - 1, SelectedDate.Day);
-				_calendarDialog.DatePicker.MinDate = new DateTimeOffset(_originalStartDate).ToUnixTimeMilliseconds();
+            if (_calendarDialog == null)
+            {
+                _calendarDialog = new DatePickerDialog(Context, this, SelectedDate.Year, SelectedDate.Month - 1, SelectedDate.Day);
+                _calendarDialog.DatePicker.MinDate = new DateTimeOffset(_originalStartDate).ToUnixTimeMilliseconds();
                 _calendarDialog.DatePicker.MaxDate = new DateTimeOffset(_endDate).ToUnixTimeMilliseconds();
-			}
-		}
+            }
+        }
 
-		void DaySelected(object sender, EventArgs args)
-		{
-			var calendarBarDay = sender as CalendarBarDayView;
+        void DaySelected(object sender, EventArgs args)
+        {
+            var calendarBarDay = sender as CalendarBarDayView;
 
-			if (calendarBarDay == null)
-			{
-				System.Diagnostics.Debug.WriteLine("[CalendarBar] Day selected event can't be executed");
-				return;
-			}
+            if (calendarBarDay == null)
+            {
+                System.Diagnostics.Debug.WriteLine("[CalendarBar] Day selected event can't be executed");
+                return;
+            }
 
-			if (_selectedCalendarBarDay != null && calendarBarDay.Date == _selectedCalendarBarDay.Date)
-			{
-				return;
-			}
+            if (_selectedCalendarBarDay != null && calendarBarDay.Date == _selectedCalendarBarDay.Date)
+            {
+                return;
+            }
 
-			calendarBarDay.IsSelected = true;
-			_selectedDate = calendarBarDay.Date;
-			if (_selectedCalendarBarDay != null)
-			{
-				_selectedCalendarBarDay.IsSelected = false;
-			}
-			_selectedCalendarBarDay = calendarBarDay;
+            calendarBarDay.IsSelected = true;
+            _selectedDate = calendarBarDay.Date;
+            if (_selectedCalendarBarDay != null)
+            {
+                _selectedCalendarBarDay.IsSelected = false;
+            }
+            _selectedCalendarBarDay = calendarBarDay;
 
-			DayChanged?.Invoke(this, new CalendarBarEventArgs() { Date = calendarBarDay.Date, Source = DateSelectionSource.Bar });
-		}
+            DayChanged?.Invoke(this, new CalendarBarEventArgs() { Date = calendarBarDay.Date, Source = DateSelectionSource.Bar });
+        }
 
-		protected override void OnMeasure(int widthMeasureSpec, int heightMeasureSpec)
-		{
-			CreateChildControls();
-			base.OnMeasure(widthMeasureSpec, heightMeasureSpec);
-		}
+        protected override void OnMeasure(int widthMeasureSpec, int heightMeasureSpec)
+        {
+            CreateChildControls();
+            base.OnMeasure(widthMeasureSpec, heightMeasureSpec);
+        }
 
-		bool IsSelected(DateTime currentDate)
-		{
-			bool isSelected = false;
-			if (currentDate.Date == SelectedDate.Date)
-			{
-				isSelected = true;
-			}
+        bool IsSelected(DateTime currentDate)
+        {
+            bool isSelected = false;
+            if (currentDate.Date == SelectedDate.Date)
+            {
+                isSelected = true;
+            }
 
-			return isSelected;
-		}
+            return isSelected;
+        }
 
         public void OnDateSet(DatePicker view, int year, int month, int dayOfMonth)
         {
-			//var selectedDateYear = _selectedDate.Year;
-			_selectedDate = new DateTime(year, month + 1, dayOfMonth);
-			//if (selectedDateYear != year)
-			//{
-			//	return;
-			//}
+            //var selectedDateYear = _selectedDate.Year;
+            _selectedDate = DateTimeExtensions.CreateValidDate(year, month + 1, dayOfMonth);
+            //if (selectedDateYear != year)
+            //{
+            //	return;
+            //}
 
-			var dayCount = (int)(_endDate - _selectedDate).TotalDays + 1;
-			if (dayCount > _maxDaysOnBar)
-			{
-				_startDate = _selectedDate;
-			}
-			else
-			{
-				_startDate = _endDate.AddDays(-_maxDaysOnBar + 1);
-			}
+            var dayCount = (int)(_endDate - _selectedDate).TotalDays + 1;
+            if (dayCount > _maxDaysOnBar)
+            {
+                _startDate = _selectedDate;
+            }
+            else
+            {
+                _startDate = _endDate.AddDaysSafe(-_maxDaysOnBar + 1);
+            }
 
-			DayChanged?.Invoke(this, new CalendarBarEventArgs() { Date = _selectedDate, Source = DateSelectionSource.Calendar });
+            DayChanged?.Invoke(this, new CalendarBarEventArgs() { Date = _selectedDate, Source = DateSelectionSource.Calendar });
 
-			RequestLayout();
+            RequestLayout();
         }
     }
 }

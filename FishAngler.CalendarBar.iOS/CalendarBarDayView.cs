@@ -1,11 +1,11 @@
 ﻿using System;
-using System.Globalization;
 using CoreGraphics;
-using Foundation;
+using FishAngler.Calendar.iOS;
 using UIKit;
+
 namespace FishAngler.CalendarBar.iOS
 {
-	public class CalendarBarDayView : UIButton
+    public class CalendarBarDayView : UIButton
 	{
 		UILabel _dayLabel;
 		UILabel _numberLabel;
