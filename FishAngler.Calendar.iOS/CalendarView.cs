@@ -208,7 +208,7 @@ namespace FishAngler.Calendar.iOS
 
             dayCell.IsActive = date >= _startDateCache && date <= _endDateCache;
 
-            Console.WriteLine($"Created cell for date {date}");
+            System.Diagnostics.Debug.WriteLine($"Created cell for date {date}");
 
             return dayCell;
         }

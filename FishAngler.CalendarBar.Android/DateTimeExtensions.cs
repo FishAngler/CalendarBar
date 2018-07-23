@@ -33,7 +33,7 @@ namespace FishAngler.CalendarBar.Android
                 var symbols = new global::Android.Icu.Text.DateFormatSymbols();
                 var standalone = (int)global::Android.Icu.Text.DateFormatSymbolContext.Standalone;
                 var abbreviated = (int)global::Android.Icu.Text.DateFormatSymbolWidth.Abbreviated;
-                days =  symbols.GetWeekdays(standalone, abbreviated);
+                days = symbols.GetWeekdays(standalone, abbreviated);
             }
             return days.Skip(1).Take(7).ToArray();//these API's return an 8-elements array
         }
