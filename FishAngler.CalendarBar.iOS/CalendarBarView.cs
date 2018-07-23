@@ -11,10 +11,10 @@ namespace FishAngler.CalendarBar.iOS
 {
     public class CalendarBarView : UIView, ICalendarViewDelegate
     {
-        DateTime _startDate = DateTime.Now.Date;
-        DateTime _originalStartDate = DateTime.Now.Date;
-        DateTime _endDate = DateTime.Now.Date.AddMonths(3);
-        DateTime _selectedDate = DateTime.Now;
+        DateTime _startDate = DateTime.Today.Date;
+        DateTime _originalStartDate = DateTime.Today.Date;
+        DateTime _endDate = DateTime.Today.Date.AddMonthsSafe(3);
+        DateTime _selectedDate = DateTime.Today;
         CalendarBarDayView _selectedCalendarBarDay;
         UIImage _moreDaysImage;
         UIColor _selectedTextColor = UIColor.Black;
@@ -44,7 +44,7 @@ namespace FishAngler.CalendarBar.iOS
             get { return _startDate; }
             set
             {
-                if (_startDate == value)
+                if (_startDate == value || value < CurrentInfo.Calendar.MinSupportedDateTime)
                 {
                     return;
                 }
@@ -61,7 +61,7 @@ namespace FishAngler.CalendarBar.iOS
             get { return _endDate; }
             set
             {
-                if (_endDate == value)
+                if (_endDate == value || value > CurrentInfo.Calendar.MaxSupportedDateTime)
                 {
                     return;
                 }
@@ -146,7 +146,7 @@ namespace FishAngler.CalendarBar.iOS
 
         void MoveStartDateIfNeeded()
         {
-            if (_selectedDate > _startDate.AddDays(_maxDaysOnBar - 1) || (_selectedDate < _startDate && _selectedDate >= _originalStartDate))
+            if (_selectedDate > _startDate.AddDaysSafe(_maxDaysOnBar - 1) || (_selectedDate < _startDate && _selectedDate >= _originalStartDate))
             {
                 _startDate = _selectedDate;
             }
@@ -181,7 +181,7 @@ namespace FishAngler.CalendarBar.iOS
             DateTime currentDate;
             for (int i = 0; i < daysOnBar; i++)
             {
-                currentDate = _startDate.AddDays(i);
+                currentDate = _startDate.AddDaysSafe(i);
                 calendarBarDay = AddDay(left, currentDate);
 
                 if (calendarBarDay.IsSelected)
@@ -330,7 +330,7 @@ namespace FishAngler.CalendarBar.iOS
             }
             else
             {
-                _startDate = _endDate.AddDays(-_maxDaysOnBar + 1);
+                _startDate = _endDate.AddDaysSafe(-_maxDaysOnBar + 1);
             }
             SetNeedsLayout();
 

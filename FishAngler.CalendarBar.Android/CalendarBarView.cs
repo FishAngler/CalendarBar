@@ -7,6 +7,7 @@ using Android.Runtime;
 using Android.Util;
 using Android.Views;
 using Android.Widget;
+using static System.Globalization.DateTimeFormatInfo;
 
 namespace FishAngler.CalendarBar.Android
 {
@@ -14,7 +15,7 @@ namespace FishAngler.CalendarBar.Android
     {
         DateTime _startDate = DateTime.Now.Date;
         DateTime _originalStartDate;
-        DateTime _endDate = DateTime.Now.Date.AddMonths(3);
+        DateTime _endDate = DateTime.Now.Date.AddMonthsSafe(3);
         DateTime _selectedDate = DateTime.Now.Date;
         CalendarBarDayView _selectedCalendarBarDay;
         Color _textColor = Color.Black;
@@ -57,7 +58,7 @@ namespace FishAngler.CalendarBar.Android
             get { return _startDate; }
             set
             {
-                if (_startDate == value)
+                if (_startDate == value || value < CurrentInfo.Calendar.MinSupportedDateTime)
                 {
                     return;
                 }
@@ -74,7 +75,7 @@ namespace FishAngler.CalendarBar.Android
             get { return _endDate; }
             set
             {
-                if (_endDate == value)
+                if (_endDate == value || value > CurrentInfo.Calendar.MaxSupportedDateTime)
                 {
                     return;
                 }
@@ -169,7 +170,7 @@ namespace FishAngler.CalendarBar.Android
 
         void MoveStartDateIfNeeded()
         {
-            if (_selectedDate > _startDate.AddDays(_maxDaysOnBar - 1) || (_selectedDate < _startDate && _selectedDate >= _originalStartDate))
+            if (_selectedDate > _startDate.AddDaysSafe(_maxDaysOnBar - 1) || (_selectedDate < _startDate && _selectedDate >= _originalStartDate))
             {
                 _startDate = _selectedDate;
             }
@@ -217,7 +218,7 @@ namespace FishAngler.CalendarBar.Android
             DateTime currentDate;
             for (int i = 0; i < daysOnBar; i++)
             {
-                currentDate = _startDate.AddDays(i).Date;
+                currentDate = _startDate.AddDaysSafe(i).Date;
                 calendarBarDay = AddDay(currentDate);
 
                 if (calendarBarDay.IsSelected)
@@ -337,7 +338,7 @@ namespace FishAngler.CalendarBar.Android
         public void OnDateSet(DatePicker view, int year, int month, int dayOfMonth)
         {
             //var selectedDateYear = _selectedDate.Year;
-            _selectedDate = new DateTime(year, month + 1, dayOfMonth);
+            _selectedDate = DateTimeExtensions.CreateValidDate(year, month + 1, dayOfMonth);
             //if (selectedDateYear != year)
             //{
             //	return;
@@ -350,7 +351,7 @@ namespace FishAngler.CalendarBar.Android
             }
             else
             {
-                _startDate = _endDate.AddDays(-_maxDaysOnBar + 1);
+                _startDate = _endDate.AddDaysSafe(-_maxDaysOnBar + 1);
             }
 
             DayChanged?.Invoke(this, new CalendarBarEventArgs() { Date = _selectedDate, Source = DateSelectionSource.Calendar });
