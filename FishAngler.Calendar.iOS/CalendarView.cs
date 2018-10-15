@@ -181,7 +181,6 @@ namespace FishAngler.Calendar.iOS
             {
                 dayCell.Text = (fromStartOfMonthIndexPath.Item + 1).ToString();
                 dayCell.Hidden = false;
-
             }
             else
             {
@@ -267,7 +266,7 @@ namespace FishAngler.Calendar.iOS
             currentItemFirstDayDate = DateTimeExtensions.CreateValidDate(currentItemFirstDayDate.Year, 
                                                                          currentItemFirstDayDate.Month, 
                                                                          1);
-            var day = (int)currentItemFirstDayDate.DayOfWeek % 7 - 1;
+            var day = (int)currentItemFirstDayDate.DayOfWeek % 7 - (int)CurrentInfo.FirstDayOfWeek;
             if (day == -1)
             {
                 day = 6;
