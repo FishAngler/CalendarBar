@@ -6,6 +6,8 @@ namespace FishAngler.CalendarBar.iOS.Example
 {
     public partial class ViewController : UIViewController
     {
+        private UITextView _label;
+
         protected ViewController(IntPtr handle) : base(handle)
         {
             // Note: this .ctor should not contain any initialization logic.
@@ -40,6 +42,22 @@ namespace FishAngler.CalendarBar.iOS.Example
                 TodayText = "Today"
             };
             Add(calendar2);
+
+            _label = new UITextView()
+            {
+                Frame = new CGRect(0, 200, UIScreen.MainScreen.Bounds.Width, 30)
+            };
+            Add(_label);
+
+            calendar1.DayChanged += DayChanged;
+            calendar2.DayChanged += DayChanged;
+
+            calendar1.SelectedDate = DateTime.Now.AddDays(40);
+        }
+
+        void DayChanged(object sender, CalendarBarEventArgs e)
+        {
+            _label.Text = e.Date.ToShortDateString();
         }
 
         public override void DidReceiveMemoryWarning()

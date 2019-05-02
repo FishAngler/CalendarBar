@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using CoreGraphics;
 using FishAngler.Calendar.iOS;
@@ -23,6 +24,9 @@ namespace FishAngler.CalendarBar.iOS
         string _todayText;
         int _maxDaysOnBar;
         CalendarView _calendarView;
+        private UIView _calendarMoreButton;
+        private UIImageView _calendarMoreImage;
+        private UILabel _calendarMoreText;
         readonly int CALENDAR_DAY_WIDTH = 45;
         readonly int CALENDAR_MORE_SECTION_MIN_WIDTH = 50;
         readonly int CALENDAR_MORE_BUTTON_WIDTH = 35;
@@ -197,6 +201,8 @@ namespace FishAngler.CalendarBar.iOS
                 AddMoreDaysSection(left);
             }
 
+            _calendarMoreText.Text = CultureInfo.CurrentCulture.DateTimeFormat.GetAbbreviatedMonthName(_selectedDate.Month).ToUpper();
+
             base.LayoutSubviews();
         }
 
@@ -229,25 +235,49 @@ namespace FishAngler.CalendarBar.iOS
             };
             Add(calendarMoreSeparator);
 
-            var calendarMoreButton = new UIButton
+            _calendarMoreButton = new UIView
             {
                 Frame = new CGRect(
                     separatorLeft + 10,
                     (Bounds.Height - CALENDAR_MORE_BUTTON_WIDTH) / 2,
                     CALENDAR_MORE_BUTTON_WIDTH,
                     CALENDAR_MORE_BUTTON_WIDTH
-                ),
+                )
+            };
+
+            var stackView = new UIStackView()
+            {
+                Frame = new CGRect(0, 0, CALENDAR_MORE_BUTTON_WIDTH, CALENDAR_MORE_BUTTON_WIDTH),
+                Axis = UILayoutConstraintAxis.Vertical,
+                Distribution = UIStackViewDistribution.FillEqually,
+                Alignment = UIStackViewAlignment.Center
+            };
+
+            _calendarMoreImage = new UIImageView()
+            {
+                ContentMode = UIViewContentMode.ScaleAspectFit
             };
 
             if (MoreDaysImage != null)
             {
-                calendarMoreButton.SetBackgroundImage(MoreDaysImage, UIControlState.Normal);
+                _calendarMoreImage.Image = MoreDaysImage;
             }
             else
             {
                 var assembly = this.GetType().Assembly;
-                calendarMoreButton.SetBackgroundImage(UIImage.FromResource(assembly, "FishAngler.CalendarBar.iOS.Resources.Calendar-50.png"), UIControlState.Normal);
+                _calendarMoreImage.Image = UIImage.FromResource(assembly, "FishAngler.CalendarBar.iOS.Resources.Calendar-50.png");
             }
+
+            _calendarMoreText = new UILabel()
+            {
+                Font = UIFont.SystemFontOfSize(11f),
+                TextColor = _textColor
+            };
+
+            stackView.AddArrangedSubview(_calendarMoreImage);
+            stackView.AddArrangedSubview(_calendarMoreText);
+
+            _calendarMoreButton.AddSubview(stackView);
 
             _calendarView.Frame = new CGRect(25, Frame.Bottom, Frame.Width - 30, Frame.Width - 100);
             _calendarView.Hidden = true;
@@ -257,15 +287,15 @@ namespace FishAngler.CalendarBar.iOS
 
             this.Superview.Add(_calendarView);
 
-            calendarMoreButton.TouchUpInside += (sender, e) =>
+            _calendarMoreButton.AddGestureRecognizer(new UITapGestureRecognizer(() =>
             {
                 _calendarView.SelectDate(_selectedDate);
                 _calendarView.Hidden = !_calendarView.Hidden;
                 _calendarView.Reset();
                 Superview.BringSubviewToFront(_calendarView);
-            };
+            }));
 
-            Add(calendarMoreButton);
+            Add(_calendarMoreButton);
         }
 
         void DaySelected(object sender, EventArgs args)

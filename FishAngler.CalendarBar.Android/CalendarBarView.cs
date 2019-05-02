@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using Android.App;
 using Android.Content;
 using Android.Content.Res;
@@ -26,7 +27,7 @@ namespace FishAngler.CalendarBar.Android
         DatePickerDialog _calendarDialog;
         int _maxDaysOnBar;
         float _textSize = 12;
-
+        private Button _calendarMoreButton;
         readonly int CALENDAR_MORE_SECTION_MIN_WIDTH = 40;
         readonly int CALENDAR_MORE_BUTTON_WIDTH = 35;
 
@@ -231,6 +232,12 @@ namespace FishAngler.CalendarBar.Android
             {
                 AddMoreDaysSection();
             }
+
+            if (_calendarMoreButton != null)
+            {
+                _calendarMoreButton.SetTextColor(TextColor);
+                _calendarMoreButton.Text = CultureInfo.CurrentCulture.DateTimeFormat.GetAbbreviatedMonthName(_selectedDate.Month).ToUpper();
+            }
         }
 
         CalendarBarDayView AddDay(DateTime currentDate)
@@ -265,24 +272,32 @@ namespace FishAngler.CalendarBar.Android
 
             AddView(calendarMoreSeparator);
 
-            var calendarMoreButton = new ImageView(Context)
+            _calendarMoreButton = new Button(Context)
             {
                 LayoutParameters = new LinearLayout.LayoutParams(Utils.ConvertDpToPixel(CALENDAR_MORE_BUTTON_WIDTH, Context), ViewGroup.LayoutParams.MatchParent),
+                TextSize = 11,
+                Background = null,
             };
-            (calendarMoreButton.LayoutParameters as LinearLayout.LayoutParams)
+
+            _calendarMoreButton.SetTextColor(TextColor);
+
+            _calendarMoreButton.SetPadding(0, 0, 0, 0);
+            (_calendarMoreButton.LayoutParameters as LinearLayout.LayoutParams)
                 .SetMargins(Utils.ConvertDpToPixel(5, Context), Utils.ConvertDpToPixel(7, Context), Utils.ConvertDpToPixel(5, Context), Utils.ConvertDpToPixel(7, Context));
 
-            calendarMoreButton.Click += (sender, e) =>
+            _calendarMoreButton.Click += (sender, e) =>
             {
                 _calendarDialog.Show();
             };
 
             if (MoreDaysImage > 0)
             {
-                calendarMoreButton.SetImageResource(MoreDaysImage);
+                var drawable = Resources.GetDrawable(MoreDaysImage);
+                drawable.SetBounds(0, 0, Utils.ConvertDpToPixel(CALENDAR_MORE_BUTTON_WIDTH / 2, Context), Utils.ConvertDpToPixel(CALENDAR_MORE_BUTTON_WIDTH / 2, Context));
+                _calendarMoreButton.SetCompoundDrawables(null, drawable, null, null);
             }
 
-            AddView(calendarMoreButton);
+            AddView(_calendarMoreButton);
 
             if (_calendarDialog == null)
             {
