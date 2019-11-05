@@ -14,6 +14,36 @@ namespace FishAngler.Calendar.iOS
         UIButton _prev;
         UIButton _next;
         string _text;
+        private UIColor _weekDayFontColor;
+
+        public UIColor FontColor
+        {
+            get => _monthLabel.TextColor;
+            set
+            {
+                _prev.SetTitleColor(value, UIControlState.Normal);
+                _next.SetTitleColor(value, UIControlState.Normal);
+                _monthLabel.TextColor = value;
+            }
+        }
+
+        public UIColor SeparatorColor
+        {
+            get => _separator.BackgroundColor;
+            set
+            {
+                _separator.BackgroundColor = value;
+            }
+        }
+
+        public UIColor WeekdayFontColor
+        {
+            get => _weekDayFontColor;
+            set
+            {
+                _weekDayFontColor = value;
+            }
+        }
 
         public CalendarHeaderView()
         {
@@ -142,6 +172,11 @@ namespace FishAngler.Calendar.iOS
             {
                 lbl.Frame = labelFrame;
                 labelFrame.X += labelFrame.Width;
+
+                if (lbl is UILabel label)
+                {
+                    label.TextColor = _weekDayFontColor;
+                }
             }
         }
     }

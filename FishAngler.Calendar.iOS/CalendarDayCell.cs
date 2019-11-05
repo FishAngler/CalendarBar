@@ -13,7 +13,11 @@ namespace FishAngler.Calendar.iOS
         UILabel _textLabel;
         UIView _backgroundView;
 
-        readonly UIColor borderColor = UIColor.FromRGB(150.0f / 255.0f, 150.0f / 255.0f, 150.0f / 255.0f);
+        public UIColor NormalFontColor { get; set; } = UIColor.LightGray;
+        public UIColor TodayFontColor { get; set; } = UIColor.Black;
+        public UIColor ActiveFontColor { get; set; } = UIColor.DarkGray;
+        public UIColor BorderColor { get; set; } = UIColor.FromRGB(150.0f / 255.0f, 150.0f / 255.0f, 150.0f / 255.0f);
+        public UIColor ContentBackgroundColor { get => _backgroundView.BackgroundColor; set => _backgroundView.BackgroundColor = value; }
 
         public bool IsToday
         {
@@ -70,13 +74,23 @@ namespace FishAngler.Calendar.iOS
             _backgroundView = new UIView();
             _backgroundView.Layer.CornerRadius = 4.0f;
             _backgroundView.BackgroundColor = UIColor.White;
-            _backgroundView.Layer.BorderColor = borderColor.CGColor;
+            if (UIDevice.CurrentDevice.CheckSystemVersion(13, 0))
+            {
+                _backgroundView.Layer.BorderColor = BorderColor.GetResolvedColor(TraitCollection).CGColor;
+            }
+            else
+            {
+                _backgroundView.Layer.BorderColor = BorderColor.CGColor;
+            }
+
             Add(_backgroundView);
 
             _textLabel = new UILabel();
-            _textLabel.TextColor = UIColor.LightGray;
+            _textLabel.TextColor = NormalFontColor;
             Add(_textLabel);
         }
+
+
 
         public override void LayoutSubviews()
         {
@@ -92,17 +106,17 @@ namespace FishAngler.Calendar.iOS
             if (!_isActive)
             {
                 _textLabel.Font = UIFont.FromName("Helvetica", _textLabel.Font.PointSize);
-                _textLabel.TextColor = UIColor.LightGray;
+                _textLabel.TextColor = NormalFontColor;
             }
             else if (_isToday)
             {
-                _textLabel.TextColor = UIColor.Black;
+                _textLabel.TextColor = TodayFontColor;
                 _textLabel.Font = UIFont.FromName("Helvetica-Bold", _textLabel.Font.PointSize);
             }
             else
             {
                 _textLabel.Font = UIFont.FromName("Helvetica", _textLabel.Font.PointSize);
-                _textLabel.TextColor = UIColor.DarkGray;
+                _textLabel.TextColor = ActiveFontColor;
             }
         }
     }

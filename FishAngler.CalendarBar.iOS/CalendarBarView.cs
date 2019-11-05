@@ -126,6 +126,22 @@ namespace FishAngler.CalendarBar.iOS
             }
         }
 
+        public UIColor CalendarCellNormalFontColor { get => _calendarView.CellNormalFontColor; set => _calendarView.CellNormalFontColor = value; }
+        public UIColor CalendarCellTodayFontColor { get => _calendarView.CellTodayFontColor; set => _calendarView.CellTodayFontColor = value; }
+        public UIColor CalendarCellActiveFontColor { get => _calendarView.CellActiveFontColor; set => _calendarView.CellActiveFontColor = value; }
+        public UIColor CalendarCellBorderColor { get => _calendarView.CellBorderColor; set => _calendarView.CellBorderColor = value; }
+        public UIColor CalendarCellContentBackgroundColor { get => _calendarView.CellContentBackgroundColor; set => _calendarView.CellContentBackgroundColor = value; }
+        public UIColor CalendarBackgroundColor { get => _calendarView.BackgroundColor; set => _calendarView.BackgroundColor = value; }
+        public CGColor CalendarShadowColor { get => _calendarView.Layer.ShadowColor; set => _calendarView.Layer.ShadowColor = value; }
+        public UIColor CalendarHeaderFontColor { get => _calendarView.HeaderFontColor; set => _calendarView.HeaderFontColor = value; }
+        public UIColor CalendarHeaderSeparatorColor { get => _calendarView.HeaderSeparatorColor; set => _calendarView.HeaderSeparatorColor = value; }
+        public UIColor CalendarHeaderWeekdayFontColor { get => _calendarView.HeaderWeekdayFontColor; set => _calendarView.HeaderWeekdayFontColor = value; }
+        
+        public UIColor CalendarYearListBackgroundColor { get => _calendarView.YearListBackgroundColor; set => _calendarView.YearListBackgroundColor = value; }
+        public UIColor CalendarYearListFontColor { get => _calendarView.YearListFontColor; set => _calendarView.YearListFontColor = value; }
+        public UIColor CalendarYearListSelectedFontColor { get => _calendarView.YearListSelectedFontColor; set => _calendarView.YearListSelectedFontColor = value; }
+        public CGColor CalendarYearListBorderColor { get => _calendarView.YearListBorderColor; set => _calendarView.YearListBorderColor = value; }
+
         public string TodayText
         {
             get { return _todayText; }

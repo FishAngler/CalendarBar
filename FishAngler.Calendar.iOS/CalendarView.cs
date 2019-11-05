@@ -48,6 +48,21 @@ namespace FishAngler.Calendar.iOS
 
         Dictionary<nint, Tuple<int, int>> _monthInfo = new Dictionary<nint, Tuple<int, int>>();
 
+        public UIColor CellNormalFontColor { get; set; } = UIColor.LightGray;
+        public UIColor CellTodayFontColor { get; set; } = UIColor.Black;
+        public UIColor CellActiveFontColor { get; set; } = UIColor.DarkGray;
+        public UIColor CellBorderColor { get; set; } = UIColor.FromRGB(150.0f / 255.0f, 150.0f / 255.0f, 150.0f / 255.0f);
+        public UIColor CellContentBackgroundColor { get; set; } = UIColor.White;
+
+        public UIColor HeaderFontColor { get => _headerView.FontColor; set => _headerView.FontColor = value; }
+        public UIColor HeaderSeparatorColor { get => _headerView.SeparatorColor; set => _headerView.SeparatorColor = value; }
+        public UIColor HeaderWeekdayFontColor { get => _headerView.WeekdayFontColor; set => _headerView.WeekdayFontColor = value; }
+
+        public UIColor YearListBackgroundColor { get => _yearList.BackgroundColor; set => _yearList.BackgroundColor = value; }
+        public UIColor YearListFontColor { get => _yearList.FontColor; set => _yearList.FontColor = value; }
+        public UIColor YearListSelectedFontColor { get => _yearList.SelectedFontColor; set => _yearList.SelectedFontColor = value; }
+        public CGColor YearListBorderColor { get => _yearList.BorderColor; set => _yearList.BorderColor = value; }
+
         public CalendarView()
         {
             _headerView = new CalendarHeaderView() { Frame = CGRect.Empty };
@@ -174,6 +189,12 @@ namespace FishAngler.Calendar.iOS
             var currentMonthInfo = _monthInfo[indexPath.Section];
             var fdIndex = currentMonthInfo.Item1;
             var numberDays = currentMonthInfo.Item2;
+
+            dayCell.NormalFontColor = CellNormalFontColor;
+            dayCell.TodayFontColor = CellTodayFontColor;
+            dayCell.ActiveFontColor = CellActiveFontColor;
+            dayCell.BorderColor = CellBorderColor;
+            dayCell.ContentBackgroundColor = CellContentBackgroundColor;
 
             var fromStartOfMonthIndexPath = NSIndexPath.FromItemSection(indexPath.Item - fdIndex, indexPath.Section);
 

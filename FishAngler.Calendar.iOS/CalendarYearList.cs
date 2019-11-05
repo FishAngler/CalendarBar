@@ -29,6 +29,36 @@ namespace FishAngler.Calendar.iOS
             } 
         }
 
+        public CGColor BorderColor { get; set; } = UIColor.FromRGB(0.9f, 0.9f, 0.9f).CGColor;
+
+        UIColor _fontColor = UIColor.LightGray;
+        public UIColor FontColor
+        {
+            get => _fontColor;
+            set
+            {
+                _fontColor = value;
+                if (_startDate != null && _endDate != null && _selectedYear != null)
+                {
+                    CreateList();
+                }
+            }
+        }
+
+        UIColor _selectedFontColor = UIColor.Gray;
+        public UIColor SelectedFontColor
+        {
+            get => _selectedFontColor;
+            set
+            {
+                _selectedFontColor = value;
+                if (_startDate != null && _endDate != null && _selectedYear != null)
+                {
+                    CreateList();
+                }
+            }
+        } 
+
         private void CreateList()
         {
             foreach(var subview in Subviews)
@@ -56,20 +86,20 @@ namespace FishAngler.Calendar.iOS
 				yearButton.SetTitle(i.ToString(), UIControlState.Normal);
 
 				var upperBorder = new CALayer();
-				upperBorder.BackgroundColor = UIColor.FromRGB(0.9f, 0.9f, 0.9f).CGColor;
-				upperBorder.Frame = new CGRect(0, 0, Frame.Width, 1.0f);
+                upperBorder.BackgroundColor = BorderColor;
+                upperBorder.Frame = new CGRect(0, 0, Frame.Width, 1.0f);
 				yearButton.Layer.AddSublayer(upperBorder);
 				yearButton.Tag = i;
 
 				if (i == _selectedYear)
 				{
 					yearButton.Font = UIFont.BoldSystemFontOfSize(25);
-					yearButton.SetTitleColor(UIColor.Gray, UIControlState.Normal);
+					yearButton.SetTitleColor(SelectedFontColor, UIControlState.Normal);
 					selectedYearButton = yearButton;
 				}
 				else
 				{
-					yearButton.SetTitleColor(UIColor.LightGray, UIControlState.Normal);
+					yearButton.SetTitleColor(FontColor, UIControlState.Normal);
 				}
 
 				yearButton.TouchUpInside += (sender, e) =>
