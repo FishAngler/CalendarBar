@@ -61,7 +61,7 @@ namespace FishAngler.Calendar.iOS
         public UIColor YearListBackgroundColor { get => _yearList.BackgroundColor; set => _yearList.BackgroundColor = value; }
         public UIColor YearListFontColor { get => _yearList.FontColor; set => _yearList.FontColor = value; }
         public UIColor YearListSelectedFontColor { get => _yearList.SelectedFontColor; set => _yearList.SelectedFontColor = value; }
-        public CGColor YearListBorderColor { get => _yearList.BorderColor; set => _yearList.BorderColor = value; }
+        public UIColor YearListBorderColor { get => _yearList.BorderColor; set => _yearList.BorderColor = value; }
 
         public CalendarView()
         {

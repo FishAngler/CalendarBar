@@ -18,6 +18,7 @@ namespace FishAngler.CalendarBar.iOS
         DateTime _selectedDate = DateTime.Today;
         CalendarBarDayView _selectedCalendarBarDay;
         UIImage _moreDaysImage;
+        UIColor _calendarShadowColor;
         UIColor _selectedTextColor = UIColor.Black;
         UIColor _textColor = UIColor.Black;
         UIColor _selectedIndicatorColor = UIColor.Black;
@@ -132,7 +133,6 @@ namespace FishAngler.CalendarBar.iOS
         public UIColor CalendarCellBorderColor { get => _calendarView.CellBorderColor; set => _calendarView.CellBorderColor = value; }
         public UIColor CalendarCellContentBackgroundColor { get => _calendarView.CellContentBackgroundColor; set => _calendarView.CellContentBackgroundColor = value; }
         public UIColor CalendarBackgroundColor { get => _calendarView.BackgroundColor; set => _calendarView.BackgroundColor = value; }
-        public CGColor CalendarShadowColor { get => _calendarView.Layer.ShadowColor; set => _calendarView.Layer.ShadowColor = value; }
         public UIColor CalendarHeaderFontColor { get => _calendarView.HeaderFontColor; set => _calendarView.HeaderFontColor = value; }
         public UIColor CalendarHeaderSeparatorColor { get => _calendarView.HeaderSeparatorColor; set => _calendarView.HeaderSeparatorColor = value; }
         public UIColor CalendarHeaderWeekdayFontColor { get => _calendarView.HeaderWeekdayFontColor; set => _calendarView.HeaderWeekdayFontColor = value; }
@@ -140,7 +140,17 @@ namespace FishAngler.CalendarBar.iOS
         public UIColor CalendarYearListBackgroundColor { get => _calendarView.YearListBackgroundColor; set => _calendarView.YearListBackgroundColor = value; }
         public UIColor CalendarYearListFontColor { get => _calendarView.YearListFontColor; set => _calendarView.YearListFontColor = value; }
         public UIColor CalendarYearListSelectedFontColor { get => _calendarView.YearListSelectedFontColor; set => _calendarView.YearListSelectedFontColor = value; }
-        public CGColor CalendarYearListBorderColor { get => _calendarView.YearListBorderColor; set => _calendarView.YearListBorderColor = value; }
+        public UIColor CalendarYearListBorderColor { get => _calendarView.YearListBorderColor; set => _calendarView.YearListBorderColor = value; }
+
+        public UIColor CalendarShadowColor
+        {
+            get => _calendarShadowColor;
+            set
+            {
+                _calendarShadowColor = value;
+                SetShadowColor();
+            }
+        }
 
         public string TodayText
         {
@@ -388,6 +398,28 @@ namespace FishAngler.CalendarBar.iOS
         public bool CalendarDidDeselectDate(CalendarView calendar, DateTime date)
         {
             return true;
+        }
+
+        private void SetShadowColor()
+        {
+            if (UIDevice.CurrentDevice.CheckSystemVersion(13, 0))
+            {
+                _calendarView.Layer.ShadowColor = _calendarShadowColor.GetResolvedColor(TraitCollection).CGColor;
+            }
+            else 
+            {
+                _calendarView.Layer.ShadowColor = _calendarShadowColor.CGColor;
+            }
+        }
+
+        public override void TraitCollectionDidChange(UITraitCollection previousTraitCollection)
+        {
+            base.TraitCollectionDidChange(previousTraitCollection);
+
+            if (UIDevice.CurrentDevice.CheckSystemVersion(13, 0) && TraitCollection.HasDifferentColorAppearanceComparedTo(previousTraitCollection))
+            {
+                SetShadowColor();
+            }
         }
     }
 }

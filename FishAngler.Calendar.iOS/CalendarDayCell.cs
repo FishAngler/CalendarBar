@@ -74,14 +74,8 @@ namespace FishAngler.Calendar.iOS
             _backgroundView = new UIView();
             _backgroundView.Layer.CornerRadius = 4.0f;
             _backgroundView.BackgroundColor = UIColor.White;
-            if (UIDevice.CurrentDevice.CheckSystemVersion(13, 0))
-            {
-                _backgroundView.Layer.BorderColor = BorderColor.GetResolvedColor(TraitCollection).CGColor;
-            }
-            else
-            {
-                _backgroundView.Layer.BorderColor = BorderColor.CGColor;
-            }
+
+            SetShadowColor();
 
             Add(_backgroundView);
 
@@ -90,7 +84,27 @@ namespace FishAngler.Calendar.iOS
             Add(_textLabel);
         }
 
+        private void SetShadowColor()
+        {
+            if (UIDevice.CurrentDevice.CheckSystemVersion(13, 0))
+            {
+                _backgroundView.Layer.BorderColor = BorderColor.GetResolvedColor(TraitCollection).CGColor;
+            }
+            else
+            {
+                _backgroundView.Layer.BorderColor = BorderColor.CGColor;
+            }
+        }
 
+        public override void TraitCollectionDidChange(UITraitCollection previousTraitCollection)
+        {
+            base.TraitCollectionDidChange(previousTraitCollection);
+
+            if (UIDevice.CurrentDevice.CheckSystemVersion(13, 0) && TraitCollection.HasDifferentColorAppearanceComparedTo(previousTraitCollection))
+            {
+                SetShadowColor();
+            }
+        }
 
         public override void LayoutSubviews()
         {

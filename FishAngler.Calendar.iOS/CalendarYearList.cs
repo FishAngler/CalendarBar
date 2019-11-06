@@ -29,7 +29,7 @@ namespace FishAngler.Calendar.iOS
             } 
         }
 
-        public CGColor BorderColor { get; set; } = UIColor.FromRGB(0.9f, 0.9f, 0.9f).CGColor;
+        public UIColor BorderColor { get; set; } = UIColor.FromRGB(0.9f, 0.9f, 0.9f);
 
         UIColor _fontColor = UIColor.LightGray;
         public UIColor FontColor
@@ -86,7 +86,16 @@ namespace FishAngler.Calendar.iOS
 				yearButton.SetTitle(i.ToString(), UIControlState.Normal);
 
 				var upperBorder = new CALayer();
-                upperBorder.BackgroundColor = BorderColor;
+
+                if (UIDevice.CurrentDevice.CheckSystemVersion(13, 0))
+                {
+                    upperBorder.BackgroundColor = BorderColor.GetResolvedColor(TraitCollection).CGColor;
+                }
+                else
+                {
+                    upperBorder.BackgroundColor = BorderColor.CGColor;
+                }
+
                 upperBorder.Frame = new CGRect(0, 0, Frame.Width, 1.0f);
 				yearButton.Layer.AddSublayer(upperBorder);
 				yearButton.Tag = i;
@@ -118,8 +127,17 @@ namespace FishAngler.Calendar.iOS
 			{
 				ScrollRectToVisible(selectedYearButton.Frame, false);
 			}
-
 		}
+
+        public override void TraitCollectionDidChange(UITraitCollection previousTraitCollection)
+        {
+            base.TraitCollectionDidChange(previousTraitCollection);
+
+            if (UIDevice.CurrentDevice.CheckSystemVersion(13, 0) && TraitCollection.HasDifferentColorAppearanceComparedTo(previousTraitCollection))
+            {
+                CreateList();
+            }
+        }
 
         DateTime? _endDate;
 		public DateTime? EndDate
