@@ -32,6 +32,8 @@ namespace FishAngler.CalendarBar.iOS
         readonly int CALENDAR_MORE_SECTION_MIN_WIDTH = 50;
         readonly int CALENDAR_MORE_BUTTON_WIDTH = 35;
 
+        public Func<CGSize, CGSize> ProduceCalendarSize { get; set; }
+
         public CalendarBarView()
         {
             ClipsToBounds = false;
@@ -305,7 +307,9 @@ namespace FishAngler.CalendarBar.iOS
 
             _calendarMoreButton.AddSubview(stackView);
 
-            _calendarView.Frame = new CGRect(25, Frame.Bottom, Frame.Width - 30, Frame.Width - 100);
+            var calendarSize = ProduceCalendarSize?.Invoke(Frame.Size) ?? new CGSize(Frame.Width - 30, Frame.Width - 100);
+
+            _calendarView.Frame = new CGRect(Frame.Width - calendarSize.Width - 5, Frame.Bottom, calendarSize.Width, calendarSize.Height);
             _calendarView.Hidden = true;
             _calendarView.StartDate = _originalStartDate;
             _calendarView.EndDate = _endDate;

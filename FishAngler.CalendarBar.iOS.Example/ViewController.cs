@@ -49,10 +49,21 @@ namespace FishAngler.CalendarBar.iOS.Example
             };
             Add(_label);
 
+            if (UIDevice.CurrentDevice.UserInterfaceIdiom == UIUserInterfaceIdiom.Pad)
+            {
+                calendar1.ProduceCalendarSize = ProduceCalendarSize;
+                calendar2.ProduceCalendarSize = ProduceCalendarSize;
+            }
+
             calendar1.DayChanged += DayChanged;
             calendar2.DayChanged += DayChanged;
 
             calendar1.SelectedDate = DateTime.Now.AddDays(40);
+        }
+
+        CGSize ProduceCalendarSize(CGSize barSize)
+        {
+            return new CGSize(barSize.Width / 2, barSize.Width / 2);
         }
 
         void DayChanged(object sender, CalendarBarEventArgs e)
