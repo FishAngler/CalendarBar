@@ -24,7 +24,6 @@ namespace FishAngler.CalendarBar.iOS
         UIColor _selectedIndicatorColor = UIColor.Black;
         string _todayText;
         int _maxDaysOnBar;
-        bool _useDefaultStartDate = true;
         CalendarView _calendarView;
         private UIView _calendarMoreButton;
         private UIImageView _calendarMoreImage;
@@ -57,8 +56,6 @@ namespace FishAngler.CalendarBar.iOS
                     return;
                 }
 
-                _useDefaultStartDate = false;
-
                 _startDate = value;
                 _originalStartDate = value;
                 MoveStartDateIfNeeded();
@@ -75,8 +72,6 @@ namespace FishAngler.CalendarBar.iOS
                 {
                     return;
                 }
-
-                _useDefaultStartDate = false;
 
                 _endDate = value;
                 SetNeedsLayout();
@@ -183,11 +178,6 @@ namespace FishAngler.CalendarBar.iOS
 
         public void CreateCalendar()
         {
-            if (_useDefaultStartDate)
-            {
-                StartDate = DateTime.Today.Date;
-                EndDate = DateTime.Today.Date.AddMonthsSafe(3);
-            }
             LayoutSubviews();
         }
 

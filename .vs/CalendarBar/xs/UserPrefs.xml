@@ -1,0 +1,50 @@
+﻿<Properties StartupConfiguration="{1285BF24-2118-46BE-870F-153A8C45F59E}|Default">
+  <MonoDevelop.Ide.ItemProperties.FishAngler.CalendarBar.Android PreferredExecutionTarget="Android.Nexus_4_API_21" />
+  <MonoDevelop.Ide.ItemProperties.FishAngler.CalendarBar.Android.Example AndroidDesignerPreferredDevice="Nexus 4" PreferredExecutionTarget="Android.Nexus_5X_API_24" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="FishAngler.Calendar.iOS/CalendarView.cs">
+    <Files>
+      <File FileName="FishAngler.CalendarBar.Android/CalendarBarDayView.cs" Line="172" Column="1" />
+      <File FileName="FishAngler.CalendarBar.Android.Example/MainActivity.cs" Line="27" Column="72" />
+      <File FileName="FishAngler.CalendarBar.Android/CalendarBarView.cs" />
+      <File FileName="FishAngler.CalendarBar.iOS/CalendarBarView.cs" />
+      <File FileName="FishAngler.CalendarBar.iOS.Example/Main.cs" />
+      <File FileName="FishAngler.CalendarBar.iOS.Example/ViewController.cs" />
+      <File FileName="FishAngler.CalendarBar.Android.Example/Resources/layout/Main.axml" />
+      <File FileName="FishAngler.CalendarBar.Android/DateTimeExtensions.cs" />
+      <File FileName="FishAngler.CalendarBar.iOS/CalendarBarDayView.cs" />
+      <File FileName="FishAngler.Calendar.iOS/DateTimeExtensions.cs" />
+      <File FileName="FishAngler.Calendar.iOS/CalendarView.cs" Line="2" Column="1" />
+    </Files>
+    <Pads>
+      <Pad Id="ProjectPad">
+        <State name="__root__">
+          <Node name="CalendarBar" expanded="True">
+            <Node name="FishAngler.Calendar.iOS" expanded="True">
+              <Node name="CalendarView.cs" selected="True" />
+            </Node>
+            <Node name="FishAngler.CalendarBar.Android" expanded="True" />
+            <Node name="FishAngler.CalendarBar.Android.Example" expanded="True" />
+            <Node name="FishAngler.CalendarBar.iOS" expanded="True" />
+            <Node name="FishAngler.CalendarBar.iOS.Example" expanded="True" />
+          </Node>
+        </State>
+      </Pad>
+      <Pad Id="MonoDevelop.Debugger.WatchPad">
+        <State>
+          <Value>_loadPointsWorks[i]</Value>
+          <Value>i</Value>
+          <Value>DataContext</Value>
+        </State>
+      </Pad>
+    </Pads>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.ItemProperties.FishAngler.CalendarBar.iOS.Example PreferredExecutionTarget="MonoDevelop.IPhone.IPhoneSimulatorTarget.5B2341D7-8BF4-49AF-8996-FD0229FF9B25" />
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore>
+      <Breakpoint file="/Users/claudioredi/sources/CalendarBar/FishAngler.CalendarBar.Android/CalendarBarView.cs" relfile="FishAngler.CalendarBar.Android/CalendarBarView.cs" line="36" column="1" />
+    </BreakpointStore>
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MultiItemStartupConfigurations />
+</Properties>
