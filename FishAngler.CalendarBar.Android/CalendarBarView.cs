@@ -169,21 +169,7 @@ namespace FishAngler.CalendarBar.Android
 
         public event EventHandler<CalendarBarEventArgs> DayChanged;
 
-        void MoveStartDateIfNeeded()
-        {
-            if (_selectedDate > _startDate.AddDaysSafe(_maxDaysOnBar - 1) || (_selectedDate < _startDate && _selectedDate >= _originalStartDate))
-            {
-                _startDate = _selectedDate;
-            }
-        }
-
-        void Initialize()
-        {
-            LayoutParameters = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.WrapContent);
-            _originalStartDate = _startDate;
-        }
-
-        void CreateChildControls()
+        public void CreateCalendar()
         {
             if (MeasuredWidth == 0)
             {
@@ -238,6 +224,20 @@ namespace FishAngler.CalendarBar.Android
                 _calendarMoreButton.SetTextColor(TextColor);
                 _calendarMoreButton.Text = CultureInfo.CurrentCulture.DateTimeFormat.GetAbbreviatedMonthName(_selectedDate.Month).ToUpper();
             }
+        }
+
+        void MoveStartDateIfNeeded()
+        {
+            if (_selectedDate > _startDate.AddDaysSafe(_maxDaysOnBar - 1) || (_selectedDate < _startDate && _selectedDate >= _originalStartDate))
+            {
+                _startDate = _selectedDate;
+            }
+        }
+
+        void Initialize()
+        {
+            LayoutParameters = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.WrapContent);
+            _originalStartDate = _startDate;
         }
 
         CalendarBarDayView AddDay(DateTime currentDate)
@@ -335,7 +335,7 @@ namespace FishAngler.CalendarBar.Android
 
         protected override void OnMeasure(int widthMeasureSpec, int heightMeasureSpec)
         {
-            CreateChildControls();
+            CreateCalendar();
             base.OnMeasure(widthMeasureSpec, heightMeasureSpec);
         }
 

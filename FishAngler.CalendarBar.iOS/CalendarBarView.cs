@@ -24,6 +24,7 @@ namespace FishAngler.CalendarBar.iOS
         UIColor _selectedIndicatorColor = UIColor.Black;
         string _todayText;
         int _maxDaysOnBar;
+        bool _useDefaultStartDate = true;
         CalendarView _calendarView;
         private UIView _calendarMoreButton;
         private UIImageView _calendarMoreImage;
@@ -56,6 +57,8 @@ namespace FishAngler.CalendarBar.iOS
                     return;
                 }
 
+                _useDefaultStartDate = false;
+
                 _startDate = value;
                 _originalStartDate = value;
                 MoveStartDateIfNeeded();
@@ -72,6 +75,8 @@ namespace FishAngler.CalendarBar.iOS
                 {
                     return;
                 }
+
+                _useDefaultStartDate = false;
 
                 _endDate = value;
                 SetNeedsLayout();
@@ -176,12 +181,14 @@ namespace FishAngler.CalendarBar.iOS
 
         public event EventHandler<CalendarBarEventArgs> DayChanged;
 
-        void MoveStartDateIfNeeded()
+        public void CreateCalendar()
         {
-            if (_selectedDate > _startDate.AddDaysSafe(_maxDaysOnBar - 1) || (_selectedDate < _startDate && _selectedDate >= _originalStartDate))
+            if (_useDefaultStartDate)
             {
-                _startDate = _selectedDate;
+                StartDate = DateTime.Today.Date;
+                EndDate = DateTime.Today.Date.AddMonthsSafe(3);
             }
+            LayoutSubviews();
         }
 
         public override void LayoutSubviews()
@@ -232,6 +239,14 @@ namespace FishAngler.CalendarBar.iOS
             _calendarMoreText.Text = CultureInfo.CurrentCulture.DateTimeFormat.GetAbbreviatedMonthName(_selectedDate.Month).ToUpper();
 
             base.LayoutSubviews();
+        }
+
+        void MoveStartDateIfNeeded()
+        {
+            if (_selectedDate > _startDate.AddDaysSafe(_maxDaysOnBar - 1) || (_selectedDate < _startDate && _selectedDate >= _originalStartDate))
+            {
+                _startDate = _selectedDate;
+            }
         }
 
         CalendarBarDayView AddDay(nfloat left, DateTime currentDate)
@@ -406,6 +421,11 @@ namespace FishAngler.CalendarBar.iOS
 
         private void SetShadowColor()
         {
+            if (_calendarShadowColor == null)
+            {
+                return;
+            }
+
             if (UIDevice.CurrentDevice.CheckSystemVersion(13, 0))
             {
                 _calendarView.Layer.ShadowColor = _calendarShadowColor.GetResolvedColor(TraitCollection).CGColor;
