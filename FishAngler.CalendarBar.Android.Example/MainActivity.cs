@@ -33,8 +33,10 @@ namespace FishAngler.CalendarBar.Android.Example
 			calendarBar2.SelectedIndicatorColor = Color.White;
 			calendarBar2.SetBackgroundColor(new Color(229, 57, 53));
 			calendarBar2.MoreDaysImage = Resource.Drawable.Calendar_50;
-			calendarBar2.TodayText = "Now";
-			calendarBar2.StartDate = DateTime.Now.AddDays(10);
+			calendarBar2.TodayText = "Today";
+            calendarBar2.TextSize = 12;
+            calendarBar2.DayTextSize = 10;
+            calendarBar2.StartDate = DateTime.Now.AddDays(10);
 			calendarBar2.EndDate = DateTime.Now.AddDays(17);
 			calendarBar2.SelectedDate = DateTime.Now.AddDays(10);
         }

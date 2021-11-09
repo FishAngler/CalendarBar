@@ -27,6 +27,7 @@ namespace FishAngler.CalendarBar.Android
         DatePickerDialog _calendarDialog;
         int _maxDaysOnBar;
         float _textSize = 12;
+        float _dayTextSize = 12;
         private Button _calendarMoreButton;
         readonly int CALENDAR_MORE_SECTION_MIN_WIDTH = 40;
         readonly int CALENDAR_MORE_BUTTON_WIDTH = 35;
@@ -133,6 +134,16 @@ namespace FishAngler.CalendarBar.Android
             set
             {
                 _textSize = value;
+                RequestLayout();
+            }
+        }
+
+        public float DayTextSize
+        {
+            get { return _dayTextSize; }
+            set
+            {
+                _dayTextSize = value;
                 RequestLayout();
             }
         }
@@ -250,7 +261,8 @@ namespace FishAngler.CalendarBar.Android
                 IsSelected = IsSelected(currentDate),
                 TodayText = TodayText,
                 SelectedIndicatorColor = SelectedIndicatorColor,
-                TextSize = _textSize
+                TextSize = _textSize,
+                DayTextSize = _dayTextSize
             };
 
             calendarBarDay.Click += DaySelected;
@@ -275,10 +287,10 @@ namespace FishAngler.CalendarBar.Android
             _calendarMoreButton = new Button(Context)
             {
                 LayoutParameters = new LinearLayout.LayoutParams(Utils.ConvertDpToPixel(CALENDAR_MORE_BUTTON_WIDTH, Context), ViewGroup.LayoutParams.MatchParent),
-                TextSize = 11,
                 Background = null,
             };
 
+            _calendarMoreButton.SetTextSize(ComplexUnitType.Dip, _dayTextSize);
             _calendarMoreButton.SetTextColor(TextColor);
 
             _calendarMoreButton.SetPadding(0, 0, 0, 0);

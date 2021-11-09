@@ -20,6 +20,7 @@ namespace FishAngler.CalendarBar.Android
         DateTime _date;
         string _todayText;
         float _textSize;
+        float _dayTextSize;
 
         public const int CALENDAR_DAY_WIDTH = 45;
 
@@ -106,6 +107,16 @@ namespace FishAngler.CalendarBar.Android
             }
         }
 
+        public float DayTextSize
+        {
+            get { return _dayTextSize; }
+            set
+            {
+                _dayTextSize = value;
+                RequestLayout();
+            }
+        }
+
         public Color SelectedIndicatorColor
         {
             get { return _selectedIndicatorColor; }
@@ -151,14 +162,14 @@ namespace FishAngler.CalendarBar.Android
             _numberLabel.Text = number.ToString();
             _numberLabel.SetTextColor(!IsSelected ? TextColor : SelectedTextColor);
             _numberLabel.SetTypeface(null, IsSelected ? TypefaceStyle.Bold : TypefaceStyle.Normal);
-            _numberLabel.TextSize = _textSize;
+            _numberLabel.SetTextSize(ComplexUnitType.Sp, _textSize);
 
             _dayLabel.Gravity = GravityFlags.Top | GravityFlags.CenterHorizontal;
             _dayLabel.Text = day.ToUpper();
             _dayLabel.SetTextColor(!IsSelected ? TextColor : SelectedTextColor);
             _dayLabel.SetTypeface(null, IsSelected ? TypefaceStyle.Bold : TypefaceStyle.Normal);
-            _dayLabel.TextSize = _textSize;
-
+            _dayLabel.SetTextSize(ComplexUnitType.Dip, _dayTextSize);
+            
             _selectedIndicator.SetBackgroundColor(IsSelected ? SelectedIndicatorColor : Color.Transparent);
 
             base.OnLayout(changed, left, top, right, bottom);
