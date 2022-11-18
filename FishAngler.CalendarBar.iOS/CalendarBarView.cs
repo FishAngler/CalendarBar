@@ -25,6 +25,7 @@ namespace FishAngler.CalendarBar.iOS
         string _todayText;
         int _maxDaysOnBar;
         CalendarView _calendarView;
+        CalendarContainerView _calendarContainerView;
         private UIView _calendarMoreButton;
         private UIImageView _calendarMoreImage;
         private UILabel _calendarMoreText;
@@ -44,6 +45,8 @@ namespace FishAngler.CalendarBar.iOS
             _calendarView.Layer.CornerRadius = 2;
             _calendarView.ClipsToBounds = false;
             _calendarView.Delegate = this;
+
+            _calendarContainerView = new CalendarContainerView();
         }
 
         public DateTime StartDate
@@ -315,17 +318,20 @@ namespace FishAngler.CalendarBar.iOS
             var calendarSize = ProduceCalendarSize?.Invoke(Frame.Size) ?? new CGSize(Frame.Width - 30, Frame.Width - 100);
 
             _calendarView.Frame = new CGRect(Frame.Width - calendarSize.Width - 5, Frame.Bottom, calendarSize.Width, calendarSize.Height);
-            _calendarView.Hidden = true;
             _calendarView.StartDate = _originalStartDate;
             _calendarView.EndDate = _endDate;
             _calendarView.AllowsMultipleSelection = false;
 
-            this.Superview.Add(_calendarView);
+            _calendarContainerView.Frame = new CGRect(0, 0, UIScreen.MainScreen.Bounds.Size.Width, UIScreen.MainScreen.Bounds.Size.Height);
+            _calendarContainerView.Hidden = true;
+            _calendarContainerView.AddSubview(_calendarView);
+
+            Superview.Add(_calendarContainerView);
 
             _calendarMoreButton.AddGestureRecognizer(new UITapGestureRecognizer(() =>
             {
                 _calendarView.SelectDate(_selectedDate);
-                _calendarView.Hidden = !_calendarView.Hidden;
+                _calendarContainerView.Hidden = !_calendarContainerView.Hidden;
                 _calendarView.Reset();
                 Superview.BringSubviewToFront(_calendarView);
             }));
@@ -356,7 +362,7 @@ namespace FishAngler.CalendarBar.iOS
 
             _selectedDate = calendarBarDay.Date;
 
-            _calendarView.Hidden = true;
+            _calendarContainerView.Hidden = true;
 
             DayChanged?.Invoke(this, new CalendarBarEventArgs() { Date = calendarBarDay.Date, Source = DateSelectionSource.Bar });
         }
@@ -385,7 +391,7 @@ namespace FishAngler.CalendarBar.iOS
         public bool CalendarDidSelectDate(CalendarView calendar, DateTime date)
         {
             _selectedDate = date;
-            _calendarView.Hidden = true;
+            _calendarContainerView.Hidden = true;
             _startDate = date;
 
             var dayCount = (int)(_endDate - _startDate).TotalDays + 1;
