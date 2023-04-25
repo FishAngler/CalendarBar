@@ -234,6 +234,16 @@ namespace FishAngler.CalendarBar.iOS
             base.LayoutSubviews();
         }
 
+        public void CloseCalendar()
+        {
+            _calendarContainerView.Hidden = true;
+        }
+
+        public void ShowCalendar()
+        {
+            _calendarContainerView.Hidden = false;
+        }
+
         void MoveStartDateIfNeeded()
         {
             if (_selectedDate > _startDate.AddDaysSafe(_maxDaysOnBar - 1) || (_selectedDate < _startDate && _selectedDate >= _originalStartDate))
